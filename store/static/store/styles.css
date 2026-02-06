@@ -1,3 +1,8 @@
+/* Copyright footer styling moved from inline style */
+.copyright-footer {
+    color: #3498db;
+    font-size: 10px;
+}
 /* Custom styles for the e-commerce site */
 body {
     font-family: Arial, sans-serif;

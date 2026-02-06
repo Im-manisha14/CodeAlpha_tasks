@@ -20,16 +20,16 @@
                             <label for="username" class="form-label">
                                 <i class="fas fa-user me-1"></i>Username
                             </label>
-                            <input type="text" class="form-control" name="username" id="username" required 
-                                   placeholder="Enter your username">
+                            <input type="text" class="form-control" name="username" id="username" required
+                                placeholder="Enter your username">
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">
                                 <i class="fas fa-lock me-1"></i>Password
                             </label>
-                            <input type="password" class="form-control" name="password" id="password" required 
-                                   placeholder="Enter your password">
+                            <input type="password" class="form-control" name="password" id="password" required
+                                placeholder="Enter your password">
                         </div>
 
                         <div class="d-grid">
@@ -42,7 +42,7 @@
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">Don't have an account? 
+                        <p class="mb-0">Don't have an account?
                             <a href="{% url 'user_register' %}" class="text-decoration-none">
                                 <strong>Sign up here</strong>
                             </a>
@@ -53,4 +53,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block footer_content %}
+<!-- Empty block to hide footer details on login page -->
 {% endblock %}

@@ -14,7 +14,7 @@
                         <p class="text-muted">Join our community today</p>
                     </div>
                     {% if form_errors_html %}
-                        {{ form_errors_html|safe }}
+                    {{ form_errors_html|safe }}
                     {% endif %}
 
                     <form method="post">
@@ -23,24 +23,24 @@
                             <label for="username" class="form-label">
                                 <i class="fas fa-user me-1"></i>Username
                             </label>
-                            <input type="text" class="form-control" name="username" id="username" required 
-                                   placeholder="Choose a username">
+                            <input type="text" class="form-control" name="username" id="username" required
+                                placeholder="Choose a username">
                         </div>
 
                         <div class="mb-3">
                             <label for="email" class="form-label">
                                 <i class="fas fa-envelope me-1"></i>Email Address
                             </label>
-                            <input type="email" class="form-control" name="email" id="email" required 
-                                   placeholder="Enter your email">
+                            <input type="email" class="form-control" name="email" id="email" required
+                                placeholder="Enter your email">
                         </div>
 
                         <div class="mb-3">
                             <label for="password1" class="form-label">
                                 <i class="fas fa-lock me-1"></i>Password
                             </label>
-                            <input type="password" class="form-control" name="password1" id="password1" required 
-                                   placeholder="Create a password">
+                            <input type="password" class="form-control" name="password1" id="password1" required
+                                placeholder="Create a password">
                             <div class="form-text text-muted">
                                 <small>
                                     <i class="fas fa-info-circle me-1"></i>
@@ -53,8 +53,8 @@
                             <label for="password2" class="form-label">
                                 <i class="fas fa-lock me-1"></i>Confirm Password
                             </label>
-                            <input type="password" class="form-control" name="password2" id="password2" required 
-                                   placeholder="Confirm your password">
+                            <input type="password" class="form-control" name="password2" id="password2" required
+                                placeholder="Confirm your password">
                         </div>
 
                         <div id="password-error" class="text-danger mb-3 hidden-error"></div>
@@ -69,7 +69,7 @@
                     <hr class="my-4">
 
                     <div class="text-center">
-                        <p class="mb-0">Already have an account? 
+                        <p class="mb-0">Already have an account?
                             <a href="{% url 'user_login' %}" class="text-decoration-none">
                                 <strong>Sign in here</strong>
                             </a>
@@ -82,14 +82,14 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const password1 = document.getElementById('password1');
-    const password2 = document.getElementById('password2');
-    const submitBtn = document.getElementById('submit-btn');
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const password1 = document.getElementById('password1');
+        const password2 = document.getElementById('password2');
+        const submitBtn = document.getElementById('submit-btn');
         const passwordError = document.getElementById('password-error');
 
-    function validateForm() {
+        function validateForm() {
             // Require: min 8 chars, at least one letter and one number, and matching confirmation
             const re = /(?=.*[A-Za-z])(?=.*\d).{8,}/;
             let msg = '';
@@ -112,20 +112,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 passwordError.classList.add('hidden-error');
                 return true;
             }
-    }
-
-    password2.addEventListener('input', validateForm);
-    password1.addEventListener('input', validateForm);
-
-    form.addEventListener('submit', function(e) {
-        if (!validateForm()) {
-            e.preventDefault();
-            return false;
         }
-        
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
-        submitBtn.disabled = true;
+
+        password2.addEventListener('input', validateForm);
+        password1.addEventListener('input', validateForm);
+
+        form.addEventListener('submit', function (e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+            submitBtn.disabled = true;
+        });
     });
-});
 </script>
+{% endblock %}
+
+{% block footer_content %}
+<!-- Empty block to hide footer details on register page -->
 {% endblock %}

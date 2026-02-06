@@ -243,17 +243,15 @@ def user_register(request):
                 errors.extend(e.messages)
         
         if errors:
-            # Remove specific redundant messages the UX owner requested hidden
-            blocked = ['Username already exists.', 'Email already registered.']
-            filtered = [e for e in errors if all(b not in e for b in blocked)]
-            # If there are filtered errors, build HTML server-side and pass through
-            # so the template contains a plain <ul> with only <li> children (no template tags).
-            if filtered:
-                from django.utils.html import escape
-                items = ''.join(f'<li>{escape(e)}</li>' for e in filtered)
+            # Remove 'Username already exists.' and 'Email already registered.' from errors
+            filtered_errors = [e for e in errors if e not in ('Username already exists.', 'Email already registered.')]
+            from django.utils.html import escape
+            if filtered_errors:
+                items = ''.join(f'<li>{escape(e)}</li>' for e in filtered_errors)
                 alert_html = f'<div class="alert alert-danger"><ul class="mb-0">{items}</ul></div>'
                 return render(request, 'store/auth/register.html', {'form_errors_html': mark_safe(alert_html), 'suppress_messages': True})
             else:
+                # If only filtered error, show clean form
                 return render(request, 'store/auth/register.html', {'suppress_messages': True})
         
         try:
@@ -268,8 +266,8 @@ def user_register(request):
         messages.success(request, 'Registration successful! Please log in with your credentials.')
         return redirect('user_login')
     
-    # Suppress global messages on the register GET so past alerts don't appear here
-    return render(request, 'store/auth/register.html', {'suppress_messages': True})
+    # GET request - show clean form without any errors
+    return render(request, 'store/auth/register.html')
 
 def user_login(request):
     if request.method == 'POST':
