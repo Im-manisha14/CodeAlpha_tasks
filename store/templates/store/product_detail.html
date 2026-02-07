@@ -67,12 +67,12 @@
                             <input type="hidden" name="product_id" value="{{ product.id }}">
                             
                             <div class="row align-items-center">
-                                <div class="col-4">
+                                <div class="col-12 col-sm-4 mb-2 mb-sm-0">
                                     <label for="quantity" class="form-label fw-bold">Quantity:</label>
                                     <input type="number" name="quantity" id="quantity" class="form-control" 
                                            min="1" max="{{ product.stock }}" value="1" required>
                                 </div>
-                                <div class="col-8">
+                                <div class="col-12 col-sm-8">
                                     <button type="submit" class="btn btn-accent btn-lg w-100">
                                         <i class="fas fa-shopping-cart me-2"></i>Add to Cart
                                     </button>

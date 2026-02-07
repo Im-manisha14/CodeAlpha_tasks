@@ -32,16 +32,16 @@
                             <i class="fas fa-filter me-1"></i>Category
                         </button>
                         {% if categories %}
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'product_list' %}">All Categories</a></li>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{% url 'product_list' %}">All Categories</a>
                             {% for category in categories %}
-                            <li><a class="dropdown-item" href="?category={{ category.id }}">{{ category.name }}</a></li>
+                                <a class="dropdown-item" href="?category={{ category.id }}">{{ category.name }}</a>
                             {% endfor %}
-                        </ul>
+                        </div>
                         {% else %}
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'product_list' %}">All Categories</a></li>
-                        </ul>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{% url 'product_list' %}">All Categories</a>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
@@ -57,7 +57,7 @@
         </h2>
         <div class="row">
             {% for product in featured_products %}
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
                     <div class="card product-card h-100">
                         {% if product.image %}
                             <img src="{{ product.image }}" class="card-img-top product-image" alt="{{ product.name }}">
@@ -109,7 +109,7 @@
         {% if page_obj %}
             <div class="row">
                 {% for product in page_obj %}
-                    <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card product-card h-100">
                             {% if product.image %}
                                 <img src="{{ product.image }}" class="card-img-top product-image" alt="{{ product.name }}">
@@ -143,7 +143,7 @@
             <!-- Pagination -->
             {% if page_obj.has_other_pages %}
                 <nav aria-label="Product pagination" class="mt-4">
-                    {% if page_obj.has_previous %}
+                    {% if page_obj.has_previous and page_obj.has_next %}
                     <ul class="pagination justify-content-center">
                         <li class="page-item">
                             <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" title="Go to first page">
@@ -160,7 +160,6 @@
                                 {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                             </span>
                         </li>
-                        {% if page_obj.has_next %}
                         <li class="page-item">
                             <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" title="Go to next page">
                                 <i class="fas fa-angle-right"></i>
@@ -171,9 +170,26 @@
                                 <i class="fas fa-angle-double-right"></i>
                             </a>
                         </li>
-                        {% endif %}
                     </ul>
-                    {% elif page_obj.has_next %}
+                    {% elif page_obj.has_previous and not page_obj.has_next %}
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" title="Go to first page">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}" title="Go to previous page">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+                    </ul>
+                    {% elif page_obj.has_next and not page_obj.has_previous %}
                     <ul class="pagination justify-content-center">
                         <li class="page-item active">
                             <span class="page-link">

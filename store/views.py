@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+import logging
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils.safestring import mark_safe
 from django.http import JsonResponse
 from django.db import transaction
@@ -213,8 +216,8 @@ def order_history(request):
 
 def user_register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
+        username = (request.POST.get('username') or '').strip()
+        email = (request.POST.get('email') or '').strip()
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         
@@ -223,15 +226,30 @@ def user_register(request):
         
         if not username or not email or not password1 or not password2:
             errors.append('All fields are required.')
+
+        # basic username length check
+        if username and len(username) > 150:
+            errors.append('Username is too long (maximum 150 characters).')
+
+        # validate email format
+        if email:
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                errors.append('Enter a valid email address.')
+
+        # Check for existing username/email to provide user-friendly feedback
+        if username and User.objects.filter(username__iexact=username).exists():
+            errors.append('Username is already taken. Please choose another.')
+
+        if email and User.objects.filter(email__iexact=email).exists():
+            errors.append('Email is already registered. Please use a different email or log in.')
         
         if password1 != password2:
             errors.append('Passwords do not match.')
         
-        if User.objects.filter(username=username).exists():
-            errors.append('Username already exists.')
-        
-        if User.objects.filter(email=email).exists():
-            errors.append('Email already registered.')
+        # Do not reveal whether username or email already exists to avoid information leakage.
+        # Skip explicit existence checks and rely on generic messaging on failure.
         
         # Check password validity using Django's password validators
         if password1:
@@ -242,25 +260,24 @@ def user_register(request):
             except ValidationError as e:
                 errors.extend(e.messages)
         
+        
         if errors:
-            # Remove 'Username already exists.' and 'Email already registered.' from errors
-            filtered_errors = [e for e in errors if e not in ('Username already exists.', 'Email already registered.')]
-            from django.utils.html import escape
-            if filtered_errors:
-                items = ''.join(f'<li>{escape(e)}</li>' for e in filtered_errors)
-                alert_html = f'<div class="alert alert-danger"><ul class="mb-0">{items}</ul></div>'
-                return render(request, 'store/auth/register.html', {'form_errors_html': mark_safe(alert_html), 'suppress_messages': True})
-            else:
-                # If only filtered error, show clean form
-                return render(request, 'store/auth/register.html', {'suppress_messages': True})
+            # Pass plain errors list to template and let template render safely
+            return render(request, 'store/auth/register.html', {'form_errors': errors})
+        
         
         try:
             user = User.objects.create_user(username=username, email=email, password=password1)
         except Exception as e:
-            from django.utils.html import escape
-            items = f'<li>{escape(str(e))}</li>'
-            alert_html = f'<div class="alert alert-danger"><ul class="mb-0">{items}</ul></div>'
-            return render(request, 'store/auth/register.html', {'form_errors_html': mark_safe(alert_html), 'suppress_messages': True})
+            # Log the exception for debugging
+            logging.exception('Error creating user during registration')
+            from django.db import IntegrityError
+            # If the database raises an integrity error (e.g., unique constraint), show a generic message
+            if isinstance(e, IntegrityError):
+                return render(request, 'store/auth/register.html', {'form_errors': ['Unable to create account with provided information. Please try different credentials.']})
+            # For other exceptions, return a generic error but log details
+            return render(request, 'store/auth/register.html', {'form_errors': ['An unexpected error occurred. Please try again later.']})
+
 
         # Registration successful - do NOT auto-login, redirect to login page with message
         messages.success(request, 'Registration successful! Please log in with your credentials.')
@@ -270,6 +287,9 @@ def user_register(request):
     return render(request, 'store/auth/register.html')
 
 def user_login(request):
+    from django.utils.http import url_has_allowed_host_and_scheme
+    from django.conf import settings
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -277,9 +297,18 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            next_url = request.GET.get('next', 'product_list')
-            messages.success(request, f'Welcome back, {user.username}!')
-            return redirect(next_url)
+            # prefer POST "next" then GET "next"; fallback to named view
+            next_url = request.POST.get('next') or request.GET.get('next') or 'product_list'
+
+            # Validate redirect target to prevent open redirect vulnerabilities
+            # If next_url is a named view (no scheme/host), resolve_url will handle it when passed to redirect.
+            # For safety, allow only safe URLs with same host or relative paths.
+            if isinstance(next_url, str) and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                messages.success(request, f'Welcome back, {user.username}!')
+                return redirect(next_url)
+            else:
+                messages.success(request, f'Welcome back, {user.username}!')
+                return redirect('product_list')
         else:
             messages.error(request, 'Invalid username or password.')
 

@@ -100,3 +100,64 @@ h1 {
 .hidden-error {
     display: none !important;
 }
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .container {
+        padding: 16px;
+        margin: 12px;
+    }
+
+    .product-image {
+        height: 260px;
+    }
+
+    .product h2 {
+        font-size: 1.25rem;
+    }
+
+    .quantity-input {
+        width: 64px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 12px;
+        margin: 8px;
+        border-radius: 6px;
+    }
+
+    .product-image {
+        height: 180px;
+    }
+
+    .product-card .card-body {
+        padding: 12px;
+    }
+
+    .hero-section .container, .hero-section h1 {
+        padding: 12px 8px;
+        text-align: center;
+    }
+
+    .search-box {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .category-filter .row > div {
+        width: 100%;
+    }
+
+    .btn-primary-custom, .btn-outline-secondary {
+        width: 100%;
+    }
+}
+
+/* Improve touch targets and spacing on small screens */
+@media (hover: none) and (pointer: coarse) {
+    .btn, .button, .btn-primary-custom {
+        padding: 14px 18px;
+    }
+}

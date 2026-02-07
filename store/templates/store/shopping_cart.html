@@ -19,10 +19,10 @@
                         <div class="row g-0">
                             <div class="col-md-3">
                                 {% if item.product.image %}
-                                    <img src="{{ item.product.image }}" class="img-fluid rounded-start h-100 cart-item-image" 
+                                     <img src="{{ item.product.image }}" class="img-fluid rounded-start cart-item-image" 
                                          alt="{{ item.product.name }}">
                                 {% else %}
-                                    <div class="bg-light rounded-start h-100 d-flex align-items-center justify-content-center">
+                                    <div class="bg-light rounded-start d-flex align-items-center justify-content-center" style="height:140px;">
                                         <i class="fas fa-image fa-3x text-muted"></i>
                                     </div>
                                 {% endif %}
@@ -45,7 +45,6 @@
                                         </div>
                                         <a href="{% url 'remove_from_cart' item.id %}" 
                                            class="btn btn-outline-danger btn-sm" title="Remove item from cart">
-                                           onclick="return confirm('Remove this item from cart?')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>

@@ -73,12 +73,19 @@ WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Try several likely locations for the sqlite file so the project works
+# after repository moves. Prefer an existing file when found.
+possible_db_paths = [
+    BASE_DIR / 'db.sqlite3',
+    BASE_DIR.parent / 'db.sqlite3',
+    Path.cwd() / 'db.sqlite3',
+]
+db_path = next((p for p in possible_db_paths if p.exists()), BASE_DIR / 'db.sqlite3')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': str(db_path),
     }
 }
 
