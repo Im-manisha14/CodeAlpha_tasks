@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media - Feed</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto 20px auto;
+        }
+
+        h1 {
+            color: #1877f2;
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .nav-links a {
+            margin-left: 15px;
+            text-decoration: none;
+            color: #65676b;
+            font-weight: bold;
+        }
+
+        .nav-links a:hover {
+            color: #1877f2;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .upload-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .upload-section form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .upload-section input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .upload-section button {
+            background-color: #1877f2;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px;
+            align-self: flex-end;
+        }
+
+        .post {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-header h3 {
+            margin: 0;
+            margin-right: 10px;
+        }
+
+        .post-header span {
+            color: #65676b;
+            font-size: 0.9em;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .post-actions {
+            display: flex;
+            margin-top: 10px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #65676b;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            color: #1877f2;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Social Media</h1>
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/settings">Settings</a>
+            <a href="/logout">Logout</a>
+        </nav>
+        <div class="user-info">
+            <img src="{{ user_profile.profileimg.url }}" alt="Profile Picture">
+            <span>{{ user.username }}</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="upload-section">
+            <h3>Create Post</h3>
+            <form action="upload" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <textarea name="caption" placeholder="What's on your mind?" rows="3" required></textarea>
+                <input type="file" name="image_upload" accept="image/*" required>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+
+        {% for post in posts %}
+        <div class="post">
+            <div class="post-header">
+                <h3><a href="#" style="text-decoration: none; color: black;">@{{ post.user }}</a></h3>
+                <span>{{ post.created_at|date:"F d, Y" }}</span>
+            </div>
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="Post Image" class="post-image">
+            {% endif %}
+            <p>{{ post.caption }}</p>
+            <div class="post-actions">
+                <a href="/like-post?post_id={{ post.id }}" class="action-btn">
+                    {% if post.no_of_likes == 0 %}
+                    Like
+                    {% else %}
+                    {{ post.no_of_likes }} Likes
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="comments-section" style="padding-top: 10px; border-top: 1px solid #eee; margin-top: 10px;">
+                {% for comment in post.comments.all %}
+                <div class="comment" style="margin-bottom: 5px; font-size: 0.9em;">
+                    <strong><a href="/profile/{{ comment.author.username }}"
+                            style="text-decoration: none; color: black;">{{ comment.author.username }}</a></strong>: {{
+                    comment.content }}
+                </div>
+                {% endfor %}
+
+                <form action="/comment" method="POST" style="margin-top: 10px; display: flex;">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <input type="text" name="comment" placeholder="Write a comment..."
+                        style="flex-grow: 1; padding: 8px; border: 1px solid #ddd; border-radius: 20px; outline: none;"
+                        required>
+                    <button type="submit"
+                        style="background: none; border: none; color: #1877f2; font-weight: bold; cursor: pointer; margin-left: 5px;">Post</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; color: #65676b;">
+            <p>No posts yet. Be the first to post!</p>
+        </div>
+        {% endfor %}
+    </main>
+</body>
+
+</html>
