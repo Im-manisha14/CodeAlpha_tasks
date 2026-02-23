@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment
+.env
+server/.env
+
+# Databases
+*.sqlite
+server/database.sqlite
+
+# Build
+dist/
+build/
+.DS_Store
