@@ -84,10 +84,16 @@ const wrapper = {
             return await db.execute(sql, params);
         } else if (mode === 'postgres') {
             // Postgres uses $1, $2, etc. instead of ?
-            let postgresSql = sql;
+            let postgresSql = sql.trim();
             let count = 1;
             while (postgresSql.includes('?')) {
                 postgresSql = postgresSql.replace('?', `$${count++}`);
+            }
+
+            // Automatically add RETURNING id for INSERT queries if not present
+            const isInsert = postgresSql.toLowerCase().startsWith('insert');
+            if (isInsert && !postgresSql.toLowerCase().includes('returning')) {
+                postgresSql += ' RETURNING id';
             }
 
             const result = await db.query(postgresSql, params);
