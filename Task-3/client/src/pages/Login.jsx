@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { LogIn, UserPlus } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({ username: '', email: '', password: '' });
-    const { login, register } = useAuth();
+    const { user, login, register } = useAuth();
     const [error, setError] = useState('');
+
+    if (user) return <Navigate to="/dashboard" />;
 
     const handleSubmit = async (e) => {
         e.preventDefault();

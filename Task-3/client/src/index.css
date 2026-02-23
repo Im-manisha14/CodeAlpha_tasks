@@ -234,24 +234,64 @@ body {
     transform: translateY(0);
 }
 
+.bg-accent-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+    top: -200px;
+    right: -200px;
+    z-index: -1;
+    filter: blur(60px);
+}
+
+/* Base Form Styles */
 input,
-textarea {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-glass);
-    border-radius: 12px;
-    padding: 14px;
+textarea,
+select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
-    width: 100%;
-    outline: none;
-    transition: all 0.2s ease;
+    padding: 1rem;
+    border-radius: 12px;
     font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
+    outline: none;
     border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+/* Utility for mobile responsiveness */
+@media (max-width: 640px) {
+    .glass {
+        padding: 1.5rem !important;
+        border-radius: 20px;
+    }
+
+    h1 {
+        font-size: 1.5rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    .grid {
+        gap: 1rem !important;
+    }
+
+    input,
+    textarea,
+    select {
+        padding: 0.875rem;
+    }
 }
 
 .text-dim {

@@ -3,7 +3,7 @@ import TaskCard from './TaskCard';
 
 const Column = ({ title, status, tasks, onAddTask, onTaskClick }) => {
     return (
-        <div className="flex flex-col w-full min-w-[320px] h-full">
+        <div className="flex flex-col w-full min-w-[280px] sm:min-w-[350px] h-full">
             <div className="flex items-center justify-between mb-6 px-4">
                 <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${status === 'Done' ? 'bg-success' : status === 'In Progress' ? 'bg-warning' : 'bg-primary'}`}></div>
