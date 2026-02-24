@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialConnect - Home Feed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding-bottom: 50px;
+            /* Space for mobile padding if needed */
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: #6366f1;
+            margin-right: 10px;
+        }
+
+        /* Desktop Nav */
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+        }
+
+        .user-info span {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #1e293b;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .main-content {
+            margin-top: 70px;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 24px 16px;
+        }
+
+        .create-post {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .create-post h3 {
+            color: #1e293b;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .create-post-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .create-post textarea {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        .create-post textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: block;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .file-input-label:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+
+        .file-input-label.file-selected {
+            border-color: #10b981;
+            color: #10b981;
+            background-color: rgba(16, 185, 129, 0.1);
+            border-style: solid;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .post-btn {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .post-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .post {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 16px;
+        }
+
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .post-user h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .post-user a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        .post-user a:hover {
+            text-decoration: underline;
+        }
+
+        .post-date {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .post-content {
+            padding: 16px 24px;
+        }
+
+        .post-content p {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+        }
+
+        .comments-section {
+            border-top: 1px solid #e2e8f0;
+            padding: 16px 24px;
+        }
+
+        .comment {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .comment:last-of-type {
+            border-bottom: none;
+        }
+
+        .comment-author {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .comment-author:hover {
+            text-decoration: underline;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            align-items: center;
+        }
+
+        .comment-input {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            padding: 10px 16px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .comment-btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .comment-btn:hover {
+            background: #5856eb;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 80px 24px;
+            color: #64748b;
+        }
+
+        .no-posts i {
+            font-size: 64px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+
+        .no-posts h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background: white;
+                flex-direction: column;
+                padding: 40px 24px;
+                gap: 20px;
+                transition: left 0.3s ease;
+                z-index: 999;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-links a {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 15px 20px;
+                font-size: 18px;
+            }
+
+            .desktop-only {
+                display: none !important;
+            }
+
+            .mobile-only {
+                display: flex !important;
+                margin-top: auto;
+                padding: 20px;
+                border-top: 1px solid #e2e8f0;
+                width: 100%;
+            }
+
+            .main-content {
+                margin-top: 60px;
+                padding: 20px 12px;
+            }
+
+            .create-post {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .post-header {
+                padding: 15px 16px;
+            }
+
+            .post-content {
+                padding: 12px 16px;
+            }
+
+            .comments-section {
+                padding: 12px 16px;
+            }
+        }
+
+        .desktop-only {
+            display: flex;
+        }
+
+        .mobile-only {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <i class="fas fa-share-alt"></i>
+                SocialConnect
+            </a>
+
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="/" class="active"><i class="fas fa-home"></i> <span>Home</span></a>
+                <a href="/settings"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                <a href="/logout" class="logout-link" onclick="return confirmLogout(event)"><i
+                        class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+
+                <div class="user-info mobile-only">
+                    {% if user_profile.profileimg %}
+                    <img src="{{ user_profile.profileimg.url }}" alt="Profile Picture"
+                        onerror="this.src='https://via.placeholder.com/40x40/6366f1/ffffff?text={{ user.username|slice:1|upper }}'">
+                    {% else %}
+                    <img src="https://via.placeholder.com/40x40/6366f1/ffffff?text={{ user.username|slice:1|upper }}"
+                        alt="Default Profile Picture">
+                    {% endif %}
+                    <span>{{ user.username }}</span>
+                </div>
+            </nav>
+
+            <div class="user-info desktop-only">
+                {% if user_profile.profileimg %}
+                <img src="{{ user_profile.profileimg.url }}" alt="Profile Picture"
+                    onerror="this.src='https://via.placeholder.com/40x40/6366f1/ffffff?text={{ user.username|slice:1|upper }}'">
+                {% else %}
+                <img src="https://via.placeholder.com/40x40/6366f1/ffffff?text={{ user.username|slice:1|upper }}"
+                    alt="Default Profile Picture">
+                {% endif %}
+                <span>{{ user.username }}</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="create-post">
+            <h3><i class="fas fa-edit"></i> Create a New Post</h3>
+            <form action="upload" method="POST" enctype="multipart/form-data" class="create-post-form" id="postForm">
+                {% csrf_token %}
+                <label for="caption" class="visually-hidden">Caption</label>
+                <textarea id="caption" name="caption"
+                    placeholder="What's on your mind? Share your thoughts with the world..." rows="3"
+                    required></textarea>
+
+                <div class="file-input-wrapper">
+                    <input id="image_upload" type="file" name="image_upload" accept="image/*" class="file-input">
+                    <label for="image_upload" class="file-input-label" id="fileLabel">
+                        <i class="fas fa-camera"></i>
+                        <span id="fileText">Choose an image to share</span>
+                    </label>
+                    <img id="imagePreview" class="image-preview" alt="Preview">
+                    <div id="uploadProgressBar" class="upload-progress-bar">
+                        <div class="upload-progress-fill"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="post-btn" id="shareBtn">
+                    <i class="fas fa-paper-plane"></i> Share Post
+                </button>
+            </form>
+        </div>
+
+        {% for post in posts %}
+        <article class="post">
+            <div class="post-header">
+                <div class="post-user">
+                    <h3><a href="/profile/{{ post.user }}" class="post-user-link">@{{ post.user }}</a></h3>
+                </div>
+                <span class="post-date">{{ post.created_at|date:"F d, Y" }}</span>
+            </div>
+
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="Post Image" class="post-image">
+            {% endif %}
+
+            <div class="post-content">
+                <p>{{ post.caption }}</p>
+                <div class="post-actions">
+                    <a href="/like-post?post_id={{ post.id }}" class="action-btn">
+                        <i class="fas fa-heart"></i>
+                        {% if post.no_of_likes == 0 %}
+                        Like
+                        {% else %}
+                        {{ post.no_of_likes }} Likes
+                        {% endif %}
+                    </a>
+                    <span class="action-btn">
+                        <i class="fas fa-comment"></i>
+                        {{ post.comments.count }} Comments
+                    </span>
+                </div>
+            </div>
+
+            <div class="comments-section">
+                {% for comment in post.comments.all %}
+                <div class="comment">
+                    <strong><a href="/profile/{{ comment.author.username }}" class="comment-author">{{
+                            comment.author.username }}</a></strong>: {{ comment.content }}
+                </div>
+                {% endfor %}
+
+                <form action="/comment" method="POST" class="comment-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <label for="comment-{{ post.id }}" class="visually-hidden">Add a comment</label>
+                    <input id="comment-{{ post.id }}" type="text" name="comment" class="comment-input"
+                        placeholder="Write a comment..." required>
+                    <button type="submit" class="comment-btn">
+                        <i class="fas fa-paper-plane"></i> Post
+                    </button>
+                </form>
+            </div>
+        </article>
+        {% empty %}
+        <div class="no-posts">
+            <i class="fas fa-images"></i>
+            <h3>No Posts Yet</h3>
+            <p>Be the first to share something amazing with the community!</p>
+        </div>
+        {% endfor %}
+    </main>
+
+    <script>
+        // Real-time file upload functionality with enhanced features
+        document.getElementById('image_upload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const label = document.getElementById('fileLabel');
+            const fileText = document.getElementById('fileText');
+            const shareBtn = document.getElementById('shareBtn');
+
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file (.jpg, .png, .gif, etc.)');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB. Please choose a smaller image.');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                // Update label
+                label.classList.add('file-selected');
+                const fileSize = (file.size / 1024 / 1024).toFixed(1);
+                fileText.innerHTML = `<i class="fas fa-check"></i> ${file.name} (${fileSize}MB)`;
+
+                // Enable share button
+                shareBtn.disabled = false;
+            } else {
+                preview.style.display = 'none';
+                label.classList.remove('file-selected');
+                fileText.innerHTML = '<i class="fas fa-camera"></i> Choose an image to share';
+                shareBtn.disabled = true;
+            }
+        });
+
+        // Enhanced form submission with progress indication
+        document.getElementById('postForm').addEventListener('submit', function (e) {
+            const shareBtn = document.getElementById('shareBtn');
+            const fileInput = document.getElementById('image_upload');
+            const caption = document.getElementById('caption');
+
+            if (!fileInput.files[0]) {
+                e.preventDefault();
+                alert('📸 Please select an image to share!');
+                return;
+            }
+
+            if (!caption.value.trim()) {
+                e.preventDefault();
+                alert('✍️ Please write a caption for your post!');
+                caption.focus();
+                return;
+            }
+
+            shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing...';
+            shareBtn.disabled = true;
+
+            // Simulate upload progress (since this is form submission, not AJAX)
+            const progressBar = document.getElementById('uploadProgressBar');
+            const progressFill = progressBar.querySelector('.upload-progress-fill');
+            if (progressBar) {
+                progressBar.style.display = 'block';
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress >= 90) {
+                        clearInterval(interval);
+                        progress = 90;
+                    }
+                    progressFill.style.width = progress + '%';
+                }, 200);
+            }
+        });
+
+        // Auto-resize textarea for caption
+        const captionTextarea = document.getElementById('caption');
+        captionTextarea.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Real-time comment validation with enhanced UX
+        document.querySelectorAll('.comment-input').forEach(input => {
+            input.addEventListener('input', function () {
+                const submitBtn = this.nextElementSibling;
+                const hasText = this.value.trim().length > 0;
+
+                if (hasText) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.backgroundColor = '#6366f1';
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.6';
+                    submitBtn.style.backgroundColor = '#9ca3af';
+                }
+            });
+
+            // Initialize button state
+            const submitBtn = input.nextElementSibling;
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.backgroundColor = '#9ca3af';
+        });
+
+        // Enhanced like button with animation
+        document.querySelectorAll('a[href*="like-post"]').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const icon = this.querySelector('i');
+                const originalClass = icon.className;
+
+                // Add heart animation
+                icon.className = 'fas fa-heart';
+                icon.style.color = '#ef4444';
+                icon.style.transform = 'scale(1.2)';
+
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                }, 150);
+
+                // Navigate after showing animation
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 300);
+            });
+        });
+
+        // Drag and drop for image upload
+        const fileInputWrapper = document.querySelector('.file-input-wrapper');
+        const fileInput = document.getElementById('image_upload');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, unhighlight, false);
+        });
+
+        fileInputWrapper.addEventListener('drop', handleDrop, false);
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function highlight(e) {
+            fileInputWrapper.classList.add('file-selected');
+        }
+
+        function unhighlight(e) {
+            if (!fileInput.files[0]) {
+                fileInputWrapper.classList.remove('file-selected');
+            }
+        }
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change', { 'bubbles': true }));
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // Ctrl+Enter or Cmd+Enter to submit form
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                const shareBtn = document.getElementById('shareBtn');
+                if (!shareBtn.disabled) {
+                    document.getElementById('postForm').submit();
+                }
+            }
+        });
+
+                // Logout confirmation
+        function confirmLogout(e) {
+            if (confirm('Are you sure you want to logout?')) {
+                return true;
+            } else {
+                e.preventDefault();
+                return false;
+            }
+        }
+
+        // Mobile Menu Toggle Logic
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        const menuIcon = menuToggle ? menuToggle.querySelector('i') : null;
+
+        if (menuToggle && navLinks && menuIcon) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                if (navLinks.classList.contains('active')) {
+                    menuIcon.className = 'fas fa-times';
+                } else {
+                    menuIcon.className = 'fas fa-bars';
+                }
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navLinks.contains(e.target) && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    menuIcon.className = 'fas fa-bars';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

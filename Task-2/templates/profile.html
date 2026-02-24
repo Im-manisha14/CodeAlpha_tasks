@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media - {{ user_object.username }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/auth.css">
+    <style>
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e2e8f0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: #6366f1;
+            margin-right: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links a:hover {
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #1e293b;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        main {
+            margin-top: 80px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 24px 16px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 60px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 60px);
+                background: white;
+                flex-direction: column;
+                padding: 40px 24px;
+                gap: 20px;
+                transition: left 0.3s ease;
+                z-index: 999;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .desktop-only {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <i class="fas fa-share-alt"></i>
+                SocialConnect
+            </a>
+
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="/"><i class="fas fa-home"></i> <span>Home</span></a>
+                <a href="/settings"><i class="fas fa-cog"></i> <span>Settings</span></a>
+                <a href="/logout" class="logout-link" onclick="return confirmLogout(event)"><i
+                        class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+            </nav>
+
+            <div class="user-info desktop-only">
+                <span>{{ user.username }}</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="profile-header">
+            <img src="{{ user_profile.profileimg.url }}" alt="Profile Picture" class="profile-img">
+            <div class="username">@{{ user_object.username }}</div>
+            <div class="bio">{{ user_profile.bio }}</div>
+            {% if user_profile.location %}
+            <div class="profile-location">📍 {{ user_profile.location }}</div>
+            {% endif %}
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value">{{ user_post_length }}</span>
+                    Posts
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ user_followers }}</span>
+                    Followers
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ user_following }}</span>
+                    Following
+                </div>
+            </div>
+
+            {% if user_object.username != user.username %}
+            <form action="/follow" method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="{{ user.username }}" name="follower">
+                <input type="hidden" value="{{ user_object.username }}" name="user">
+
+                {% if button_text == 'Follow' %}
+                <button type="submit" class="follow-btn">{{ button_text }}</button>
+                {% else %}
+                <button type="submit" class="follow-btn unfollow">{{ button_text }}</button>
+                {% endif %}
+            </form>
+            {% else %}
+            <a href="/settings" class="follow-btn edit-profile-link">Edit Profile</a>
+            {% endif %}
+        </div>
+
+        <div class="posts-grid">
+            {% for post in user_posts %}
+            <div class="post-card">
+                <img src="{{ post.image.url }}" alt="Post Image">
+                <div class="post-info">
+                    <p>{{ post.caption }}</p>
+                    <span class="post-likes">{{ post.no_of_likes }} Likes</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-posts">No posts yet.</p>
+            {% endfor %}
+        </div>
+    </main>
+    <script>
+        // Mobile Menu Toggle logic
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        const menuIcon = menuToggle ? menuToggle.querySelector('i') : null;
+
+        if (menuToggle && navLinks && menuIcon) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                if (navLinks.classList.contains('active')) {
+                    menuIcon.className = 'fas fa-times';
+                } else {
+                    menuIcon.className = 'fas fa-bars';
+                }
+            });
+        }
+
+        function confirmLogout(event) {
+            if (!confirm('Are you sure you want to logout?')) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+
+</html>

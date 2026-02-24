@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Modern E-Commerce Store{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-gray: #ecf0f1;
+            --dark-gray: #34495e;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--primary-color);
+        }
+
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-gray));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-custom .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .navbar-custom .nav-link {
+            color: white !important;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-custom .nav-link:hover {
+            color: var(--secondary-color) !important;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        /* Ensure hero doesn't consume excessive vertical space on small devices */
+        .hero-section { min-height: 120px; display:flex; align-items:center; }
+
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary-custom {
+            background: var(--secondary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background: var(--accent-color);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-accent:hover {
+            background: #c0392b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .product-card {
+            margin-bottom: 2rem;
+        }
+
+        .product-image {
+            height: 250px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        /* Responsive adjustments for product images and hero spacing */
+        @media (max-width: 768px) {
+            .product-image {
+                height: 180px;
+            }
+            .hero-section {
+                padding: 2.5rem 0;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .product-image {
+                height: 140px;
+            }
+            .hero-section {
+                padding: 1.5rem 0;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .hero-section { min-height: 100px; }
+            .navbar-custom .navbar-brand {
+                max-width: 70%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+
+        /* Mobile-first form and layout tweaks */
+        .card-body { padding: 1.25rem; }
+        .form-label { font-size: 0.95rem; }
+
+        .btn-lg {
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Responsive navbar and hero text */
+        .navbar-custom .navbar-brand { font-size: 1.4rem; }
+        .hero-section h1 { font-size: 2rem; }
+        .hero-section p.lead { font-size: 1rem; }
+
+        @media (max-width: 768px) {
+            .navbar-custom .navbar-brand { font-size: 1.25rem; }
+            .hero-section h1 { font-size: 1.6rem; }
+            .hero-section p.lead { font-size: 0.95rem; }
+            .card { border-radius: 8px; }
+            .card-body { padding: 1rem; }
+            .btn-primary-custom, .btn-accent { padding: 8px 14px; }
+        }
+
+        @media (max-width: 420px) {
+            .navbar-custom .navbar-brand { font-size: 1.05rem; }
+            .hero-section h1 { font-size: 1.3rem; }
+            .hero-section p.lead { font-size: 0.9rem; }
+            .card-body { padding: 0.75rem; }
+            .search-box { height: 40px; }
+            .product-card .card-body { padding: 0.75rem; }
+        }
+
+        .price-tag {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid var(--light-gray);
+        }
+
+        .search-box:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .badge-stock {
+            background: var(--success-color);
+        }
+
+        .badge-out-of-stock {
+            background: var(--accent-color);
+        }
+
+        .cart-total {
+            background: var(--light-gray);
+            border-radius: 10px;
+            padding: 1.5rem;
+        }
+
+        /* Cart and checkout responsive tweaks */
+        .cart-item-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-placeholder, .card-img-top.product-image {
+            height: 140px;
+            object-fit: cover;
+        }
+
+        /* Placeholder used in cart when image is missing */
+        .cart-placeholder {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Disable sticky summary on smaller viewports so it doesn't overlap content */
+        @media (max-width: 991px) {
+            .cart-total.sticky-top {
+                position: static !important;
+                top: auto !important;
+            }
+            .cart-total { margin-top: 1rem; }
+            .quantity-input { max-width: 100px; }
+        }
+
+        @media (max-width: 420px) {
+            .cart-item-image, .product-placeholder, .card-img-top.product-image {
+                height: 110px;
+            }
+            .quantity-input { max-width: 100%; }
+            .btn-accent, .btn-primary-custom { width: 100%; }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .category-filter {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .hidden-error {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'product_list' %}">
+                <i class="fas fa-store me-2"></i>ModernStore
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" title="Toggle navigation menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product_list' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                </ul>
+                
+                {% if user.is_authenticated %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'shopping_cart' %}">
+                            <i class="fas fa-shopping-cart me-1"></i>Cart
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'order_history' %}">
+                            <i class="fas fa-history me-1"></i>Orders
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'user_logout' %}">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% else %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_register' %}">
+                            <i class="fas fa-user-plus me-1"></i>Register
+                        </a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if not suppress_messages and messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% elif message.tags == 'success' %}fa-check-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" title="Close alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer (content removed) -->
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            {% block footer_content %}
+            {% endblock %}
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>
