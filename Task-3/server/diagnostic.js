@@ -22,11 +22,11 @@ async function checkConnection() {
         console.log("Message:", err.message);
 
         if (err.code === 'ECONNREFUSED') {
-            console.log("\nTIP: It looks like your MySQL server is NOT running. Please open XAMPP (or your database manager) and START the MySQL service.");
+            console.log("\nTIP: It looks like your database server is NOT running. Please ensure your PostgreSQL (or MySQL) service is STARTED.");
         } else if (err.code === 'ER_BAD_DB_ERROR') {
             console.log("\nTIP: The database exists but the tables might not be created. Try running 'node setup.js'.");
         } else if (err.code === 'ER_ACCESS_DENIED_ERROR') {
-            console.log("\nTIP: Check your password 'Manisha14' and username 'root' in the .env file.");
+            console.log(`\nTIP: Check your credentials in the .env file. Current user in .env: ${process.env.DB_USER}`);
         }
     }
 }

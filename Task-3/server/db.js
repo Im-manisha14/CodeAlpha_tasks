@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const { Pool } = require('pg');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 let db;
 let mode = 'mysql';
@@ -16,7 +16,7 @@ async function initDB() {
             filename: path.join(__dirname, 'database.sqlite'),
             driver: sqlite3.Database
         });
-        console.log("✅ SQLite connected (Direct Mode).");
+        console.log(`✅ SQLite connected (Direct Mode) to: ${path.basename(path.join(__dirname, 'database.sqlite'))}`);
         mode = 'sqlite';
         return db;
     }
@@ -32,7 +32,7 @@ async function initDB() {
             });
             // Test connection
             await pool.query('SELECT NOW()');
-            console.log("✅ PostgreSQL connected.");
+            console.log(`✅ PostgreSQL connected to database: ${process.env.DB_NAME}`);
             db = pool;
             mode = 'postgres';
             return db;
@@ -42,7 +42,7 @@ async function initDB() {
                 filename: path.join(__dirname, 'database.sqlite'),
                 driver: sqlite3.Database
             });
-            console.log("✅ SQLite connected (Failover Mode).");
+            console.log(`✅ SQLite connected (Failover Mode) to: ${path.basename(path.join(__dirname, 'database.sqlite'))}`);
             mode = 'sqlite';
             return db;
         }
